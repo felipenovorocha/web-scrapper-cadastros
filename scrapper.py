@@ -6,6 +6,7 @@ import csv
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager as Chrome
 import pyautogui as pg
+import time
 
 
 
@@ -23,12 +24,19 @@ def cadastros_clan_lol():
             driver.get(f"https://royaleapi.com/player/{tag}")
             content = driver.page_source.encode("utf-8").strip() #pegar conteúdo da página
             soup = bsoup(content,'lxml') #realizar parse do conteúdo em content
-            title = soup.find("h1", class_="header").text.strip()
-            images = soup.find_all("img", class_= ["ui", "small","image"])
-            image_link = images[2]['src'].strip()
+            try:
+                title = soup.find("h1", class_="header").text.strip()
+                images = soup.find_all("img", class_= ["ui", "small","image"])
+                image_link = images[2]['src'].strip()
+            except:
+                title = "Tag de Jogador Inválida"
+                images = title
+                image_link = images
 
-            print(title)
-            print(image_link)
+            time.sleep(3) #tempo de espera seguro para apertar a tecla esc
+
+            pg.press("esc") #pressionar esc para evitar o carregamento de informações desnecessárias na página
+
             try:
                 escritor.writerow([title, tag, image_link])
             except Exception as e:
